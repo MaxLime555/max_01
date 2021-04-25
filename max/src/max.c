@@ -1,169 +1,250 @@
 #include <stdio.h>
 #include <stdlib.h>
-/* работа Клименко Максима: калькулятор с векторами*/
-int main()
-{
-    int size, res;
-    long long int g;
-    float a, b, *x, *y, h;
-    char c, d, e, z, n, in[100], out[100];
-    h = 0;
-    g = 1;
-    /* обозначаю указатели и немного украшаю пользовательский интерфейс*/
-    do
-    {
-        FILE *input, *output;
-        printf("\nВведите имя файла для ввода: ");
+// Работа Клименко Максима. Использование списков для хранения массива данных с произвольным количеством элементов.
+// Весь калькулятор пришлось переиначить, кроме названий переменных почти ничего от старого не осталось :(
+// Но прикольно, пошевелить мозгами и убить часиков 5 полезно.
+// Надеюсь, что я нигде не накосячил и переменные правильно поставил.
+// Список для входных данных.
+struct list1 {
+	char n, z;
+	int size;
+	float *a, *b;
+	struct list1 *next;
+};
+
+// Список тут для выходных данных.
+struct list2 {
+	float *h;
+	struct list2 *res_next;
+};
+
+float* numb(char z, float *a, float *b);
+float* vect(char z, int h, float *x, float *y);
+float* add_numb(FILE *input, int size);
+void add_el(struct list1 *current, FILE *input);
+void res_add_el(struct list2 *res_current, struct list1 *current);
+
+int main(int argc, char *argv[]) {
+	char e;
+	char in[20], out[20];
+
+    FILE *input, *output;
+    struct list1 *head, *current;    // указатели на начало списка и текущий элемент
+    struct list2 *head_res, *current_res;
+
+	while (e == 'y') {
+		printf("\nВведите имя вводного файла: ");
 		scanf("%s", in);
-		printf("Введите имя файла для вывода: ");
+		printf("Введите имя выводного файла: ");
 		scanf("%s", out);
 		input = fopen(in, "r");
-		output = fopen(out, "w");
-        fprintf(output,"Введите, какой калькулятор вы хотите использовать(n нормальный, v векторный): ");
-        fscanf(input, " %c", &n);
-        switch (n) {
-        case 'v':
-            fprintf(output, "Введите размер вектора: ");
-            fscanf(input, " %i", &size);
-            x = malloc(size * sizeof(float));
-            y = malloc(size * sizeof(float));
-            fprintf(output, "Выберите операцию, которую проведете с векторами(+, -, *): ");
-            fscanf(input, " %c", &z);
-            /* с помощью кейсов распределяю, когда какой блок будет работать
-            1 кейс- обработка сложения векторов
-            2 кейс- обработка разности векторов
-            3 кейс- скалярное произведение этих векторов
-            и в случае ошибки ввода операции программа выведет
-            "Выбрана неправильная операция"
-            */
-
-            switch (z) {
-            case '+':
-                fprintf(output, "Введите первый вектор: ");
-                for (int i = 0; i < size; i++)
-                    fscanf(input, "%f", &x[i]);
-                fprintf(output, "Введите второй вектор: ");
-                for (int i = 0; i < size; i++)
-                    fscanf(input, "%f", &y[i]);
-                fprintf(output, "Результат операции с векторами: ");
-                for (int i = 0; i < size; i++)
-                    fprintf(output, "%f\n", x[i] + y[i]);
-                break;
-            case '-':
-                fprintf(output, "Введите первый вектор: ");
-                for (int i = 0; i < size; i++)
-                    fscanf(input, "%f", &x[i]);
-                fprintf(output, "Введите второй вектор: ");
-                for (int i = 0; i < size; i++)
-                    fscanf(input, "%f", &y[i]);
-                fprintf(output, "Результат операции с векторами: ");
-                for (int i = 0; i < size; i++)
-                    fprintf(output, "%f\n", x[i] - y[i]);
-                break;
-            case '*':
-                fprintf(output, "Введите первый вектор: ");
-                for (int i = 0; i < size; i++)
-                    fscanf(input, "%f", &x[i]);
-                fprintf(output, "Введите второй вектор: ");
-                for (int i = 0; i < size; i++)
-                    fscanf(input, "%f", &y[i]);
-                fprintf(output, "Результат операции с векторами: ");
-                for (int i = 0; i < size; i++)
-                    h = h + x[i] * y[i];
-                fprintf(output, "%f\n", h);
-                break;
-            default:
-                fprintf(output, "Выбрана неправильная операция");
-                break;
-            }
-            free(x);
-            free(y);
-            break;
-        case 'n':
-            fprintf(output, "Введите первое число: "); /*тут у меня чисто оформление пользовательского интерфейса, спрашиваю
-            про использование второго числа, чтобы не возникло ошибок с факториалом, может их и так бы не возникло,
-            но я немного устал убирать предупреждения и просто решил упростить этот момент */
-            fscanf(input, " %f", &a);
-            fprintf(output, "Будет ли использоваться второе число\n(если будете искать факториал)?(+/-) ");
-            fscanf(input, " %c", &c);
-            switch (c) {
-            case '+':
-                fprintf(output, "Введите это число: ");
-                fscanf(input, " %f", &b);
-                break;
-            case '-':
-                fprintf(output, "Вам доступна только операция факториал, выберите эту операцию!\n");
-                break;
-            default:
-                fprintf(output, "Вы не выбрали операцию, запустите программу заново!\n");
-                break;
-            }
-            fprintf(output, "Введите операцию, которую хотите произвести"
-                   " с числами(+,-,*,/,!,^)\n(сложение, вычитание,"
-                   "умножение, деление, факториал\nили возведение первого числа в степень второго указанного числа)\n"
-                   "учтите, что факториал отрицательного числа взять нельзя :");
-            fscanf(input, " %c", &d);
-            switch (d) /* дальше все просто, кейсами каждую операцию оформляю, какая операция что делает
-            описывать долго, нудно и бессмысленно, так как по символу после case все понятно. Но на всякий случай опишу.
-            1 кейс - сложение. 2 кейс- вычитание. 3 кейс - умножение. 4 кейс-деление.
-            5 кейс-факториал числа. 6 кейс - возведение в степень. */
-            {
-            case '+':
-                fprintf(output, "Результат:%f+%f=%f", a, b, a + b);
-                break;
-            case '-':
-                fprintf(output, "Результат:%f-%f=%f", a, b, a - b);
-                break;
-            case '*':
-                fprintf(output, "Результат:%f*%f=%f", a, b, a * b);
-                break;
-            case '/':
-                fprintf(output, "Результат:%f/%f=%f", a, b, a / b);
-                break;
-            case '!':
-                for (int i = 1; i <= a; i = i + 1) {
-                    g = g * i;
-                }
-                fprintf(output, "Результат:%lli", g);
-                break;
-            case '^':
-                res = 1;
-                for (int i = 0; i < b; i = i + 1) {
-                    res = res * a;
-                }
-                fprintf(output, "Результат:%f^%f=%d", a, b, res);
-                break;
-            default:
-                fprintf(output, "Вы не выбрали операцию, запустите программу заново!");
-            }
-            g=1;
-            res=1;
-            break;
-    }
-    fclose(input);
-    fclose(output);
-    fprintf(output, "Хотите ли продолжить?(y - да, n - нет): ");
-    fscanf(input, " %c", &e);
-    } while (e == 'y');
-    return 0;
+		if (feof(input) == 0) {
+			head = malloc(sizeof(struct list1));    // память для первого элемента списка
+			fscanf(input, " %c", &head->z);
+			fscanf(input, " %c", &head->n);
+			if (head->n == 'v') {
+				fscanf(input, " %i", &head->size);
+			} else {
+				head->size = 1;
+			}
+			if (head->z != '!') {
+				head->a = add_numb(input, head->size);
+				head->b = add_numb(input, head->size);
+			} else {
+				head->a = add_numb(input, head->size);
+				head->b = NULL;
+			}
+			current = head;
+				while (feof(input) == 0) {    // добавление узлов списка, пока не закончится файл, фукция feof возвращает 0, пока не закончится файл,
+				add_el(current, input);		  // поэтому её и использовал.
+				current = current->next;
+				}
+			head_res = malloc(sizeof(struct list2));    // память для первого элемента выводного списка
+			current = head;
+			if (current->n == 'v') {
+				head_res->h = vect(current->z, current->size, current->a,
+						current->b);
+			} else {
+				head_res->h = numb(current->z, current->a, current->b);
+			}
+			head_res->res_next = NULL;
+			current = current->next;
+			current_res = head_res;
+			while (current != NULL) {     // пока элемент списка не последниий
+				res_add_el(current_res, current);      // переустановка указателей на следующий элемент
+				current = current->next;
+				current_res = current_res->res_next;
+			}
+			current = head;
+			current_res = head_res;
+			fclose(input);
+			output = fopen(out, "w");
+			while (current != NULL)       //запись ответа в output
+			{
+				if (current->n == 'v') {
+					fprintf(output, "(");
+					for (int i = 0; i < current->size; i++) {
+						fprintf(output, " %f", current->a[i]);
+					}
+					fprintf(output, ") %c (", current->z);
+					for (int i = 0; i < current->size; i++) {
+						fprintf(output, " %f", current->b[i]);
+					}
+					fprintf(output, " ) = ");
+					if (current->z != '*') {
+						fprintf(output, "( ");
+						for (int i = 0; i < current->size; i++) {
+							fprintf(output, "%f ", current_res->h[i]);
+						}
+						fprintf(output, ")\n");
+					} else {
+						fprintf(output, "%f\n", current_res->h[0]);
+					}
+				} else if (current->n == 's') {
+					fprintf(output, " %f %c %f = %f\n", current->a[0],
+							current->b[0], current->z, current_res->h[0]);
+				}
+				current = current->next;
+				current_res = current_res->res_next;
+			}
+			fclose(output);
+	}
+		printf("Вы хотите продолжить? (y/n)");
+		scanf("%s", &e);
+	}
+	return 0;
 }
-/* инструкция для векторного:
- * водим имя входного файла
- * вводим имя выходного файла
- * v
- * вводим размер вектора
- * вводим операцию с векторами
- * вводим каждый вектор, столько координат, сколько вы объявили размер вектора
- * Выведет он текст "Результат операции с векторами:" и сам результат
- * выбираем, хотим ли продолжить(y или n)
- * Инструкция для нормального калькулятора
- * вводим имя входного файла
- * вводим имя выводного файла
- * n
- * вводим первое число
- * выбираем, будет ли второе число(если нет, то вводим операцию факториал и будет вывод операции)
- * если да, то вводим второе число
- * выбираем операццию
- * выводится реультат работы
- * выбираем, хотим ли продолжить(y или n)
- */
+
+// каждый блок(функция) калькулятора отдельно написан. Сначала у меня векторный.
+float* vect(char z, int size, float *x, float *y) {
+	float *res_vect;
+	switch (z) {
+	case '+':
+		res_vect = malloc(size * sizeof(float));
+		for (int i = 0; i < size; i++) {
+			res_vect[i] = x[i] + y[i];
+		}
+		return res_vect;
+		break;
+	case '-':
+		res_vect = malloc(size * sizeof(float));
+		for (int i = 0; i < size; i++) {
+			res_vect[i] = x[i] - y[i];
+		}
+		return res_vect;
+		break;
+	case '*':
+		res_vect = malloc(sizeof(float));
+		res_vect[0] = 0;
+		for (int i = 0; i < size; i++) {
+			res_vect[0] += x[i] * y[i];
+		}
+		return res_vect;
+		break;
+	}
+	return x;
+	return y;
+	free(x);
+	free(y);
+	free(res_vect);
+}
+
+// Теперь обычный.
+float* numb(char z, float *a, float *b) {
+	float f, m, *res_numb;
+	res_numb = malloc(sizeof(float));
+	switch (z) {
+	case '+':
+		res_numb[0] = a[0] + b[0];
+		return res_numb;
+		break;
+
+	case '-':
+		res_numb[0] = a[0] - b[0];
+		return res_numb;
+		break;
+
+	case '*':
+		res_numb[0] = a[0] * b[0];
+		return res_numb;
+		break;
+
+	case '/':
+		if (b != 0) {
+			res_numb[0] = a[0] / b[0];
+			return res_numb;
+		} else {
+			return 0;
+		}
+        break;
+	case '!':
+		f = 1;
+		for (int i = 1; i <= a[0]; i++) {
+			f *= i;
+		}
+		res_numb[0] = f;
+		return res_numb;
+        break;
+	case '^':
+		f = 1;
+		m = 1;
+		for (int i = 1; i <= b[0]; i++) {
+			m *= a[0];
+		}
+		res_numb[0] = m;
+		return res_numb;
+		break;
+	}
+	return a;
+	return b;
+	free(a);
+	free(b);
+	free(res_numb);
+}
+
+//осталось считать указатели и добавить элементы списка. Этот блок считывает указатели и добавляет числа.
+float* add_numb(FILE *input, int size) {
+	float *numb;
+	numb = malloc(size * sizeof(float));
+	for (int i = 0; i < size; i++) {
+		fscanf(input, "%f", &numb[i]);
+	}
+	return numb;
+}
+
+// добавляю элемент списка для входных данных.
+void add_el(struct list1 *current, FILE *input) {
+	struct list1 *z = malloc(sizeof(struct list1));
+	fscanf(input, " %c", &z->z);
+	fscanf(input, " %c", &z->n);
+	if (z->n == 'v') {
+		fscanf(input, " %i", &z->size);
+	} else {
+		z->size = 1;
+	}
+	if (z->z != '!') {
+		z->a = add_numb(input, z->size);
+		z->b = add_numb(input, z->size);
+	} else {
+		z->a = add_numb(input, z->size);
+		z->b = NULL;
+	}
+	z->next = NULL;   // последний элемент списка.
+	current->next = z;    // переустановка указателя.
+}
+
+// добавление элемента списка для выходных данных.
+void res_add_el(struct list2 *res_current, struct list1 *current) {
+	struct list2 *z_res = malloc(sizeof(struct list1));
+	if (current->n == 'v') {
+		z_res->h = vect(current->z, current->size, current->a, current->b);
+	} else {
+		z_res->h = numb(current->z, current->a, current->b);
+	}
+	z_res->res_next = NULL;
+	res_current->res_next = z_res;
+}
+
+
+
+

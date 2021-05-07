@@ -1,250 +1,238 @@
-#include<stdio.h>
-#include<stdlib.h>
+/*Работа Клименко Максима(3 раз исправляю). Файловый калькулятор со списками
+ * исправил передачу части параметров
+ * при проверке ошибок никаких не выдал, инструкцию для работы напишу чуть ниже
+ * Формат ввода: знак, s или v, количество координат векторов, данные.
+ * пример входных данных для работы с числами: + s 4.6 -5
+ * пример входных данных для работы с векторами: - v 5 4 -1 0,4 8 112 6
+ * Надеюсь и верю, что третья попытка будет успешной :)
+ */
+#include <stdio.h>
+#include <stdlib.h>
 
-typedef struct start_list {  //обозначаю структуру для входных данных.
-	char operation;          //тут же переменные и указатели, которые буду использовать.
-	char sign;
+// список для входных данных
+struct list1 {
+	char sign, choose;
 	int size;
-	float *firstNum;
-	float *secondNum;
-	struct start_list *next;
-} input_data;
+	float *x, *y;
+	struct list1 *next;
+};
 
-typedef struct rez_list {    //обозначаю структуру для выходных данных.
-	float result;            //аналогично прошлому блоку.
-	struct rez_list *rez_next;
-} output_data;
-
-//все функции, которые будут использоваться в программе.
-//их реализация будет описана ниже.
-float *numbers(char sign, float *firstNum, float *secondNum); //функция, выполняющая роль обычного калькулятора.
-float *vectors(char sign, int size, float *vector1, float *vector2); //функция, выполняющая роль векторного калькулятора.
-float *addnumber(FILE input, int size); //функция для считывания номера указателя и добавления его в переменную.
-void *addelement(input_data *current, FILE *input);//добавляет нужные числа в нашу структуру. читает функции из входного файла и создает список с преопределенными действиями.
-void *addelemt_res(output_data *current_res, FILE *output);//функция аналогична прошлой. она считывает данные не из файла, а считывает данные после проделанных нами операций.
-
-//основная функция, использующая все функции сверху.
-int main(int argc,char *argv[])
-{
-	int end_work = 1;
-	char inFile[100], outFile[100];
+// список для выходных данных
+struct list2 {
+	float *res;
+	struct list2 *res_next;
+};
+float* numb(char sign, float *x, float *y);
+float* vect(char sign, int size, float *a, float *b);
+float* add_numb(FILE *input, int size);
+void add_el(struct list1 *current, FILE *input);
+void res_add_el(struct list2 *res_current, struct list1 *current);
+int main() {
+	char n = 'y';
+	char in[20], out[20];
 	FILE *input, *output;
-	input_data *head, *current;
-	output_data *head_res, *current_res;
-	while (end_work != 0){
-		printf("Введите название входного файла: ");
-		scanf(" %s", inFile);
-		printf("Введите имя выводного файла ");
-		scanf("  %s", outFile);
-		input = fopen(inFile, "r");
-		if(!feof(input)){  //работает до тех пор, пока не появится конец входного файла.
-			head = malloc(1 *sizeof(input_data)); //выделяю память для начала моего списка. затем выделю для каждого элемента.
-			scanf(input, " %c %c", &head -> sign, &head -> operation);
-			//теперь обрабатываем все данные, которые поступают дальше.
-			if (head -> operation == 'v') {
-				fscanf(input, " %i", &head -> size);
+	struct list1 *head, *current; //указатели на начало списка и текущий элемент
+	struct list2 *head_res, *current_res;
+	while (n == 'y') {
+		printf("\nInput file name: ");
+		scanf("%s", in);
+		printf("Output file name: ");
+		scanf("%s", out);
+		input = fopen(in, "r");
+		if (feof(input) == 0) {
+			head = malloc(sizeof(struct list1)); // память для первого элемента списка
+			fscanf(input, " %c", &head->sign);
+			fscanf(input, " %c", &head->choose);
+			if (head->choose == 'v') {
+				fscanf(input, " %i", &head->size);
+			} else {
+				head->size = 1;
 			}
-			else {
-				head -> size = 1;
+			if (head->sign != '!') {
+				head->x = add_numb(input, head->size);
+				head->y = add_numb(input, head->size);
+			} else {
+				head->x = add_numb(input, head->size);
+				head->y = NULL;
 			}
-			if (head -> sign != '!') {
-				head -> firstNum = addnumber(input, head -> size);
-				head -> secondNum = addnumber(input, head -> size);
-			}
-			else {
-				head -> firstNum = addnumber(input, head -> size);
-				head -> secondNum = NULL;
-			}
-			// меняем местами текущий элемент указателя
-			// это необходимо для будущих операции и для следующего элемента заголовка, когда цикл перейдет на следующий круг.
 			current = head;
-			int n;
-			// добавляем элементы, пока не дойдём до конца файла
-            while (!feof(input))
-            {
-                addelement(current, input);
-                current = current->next;
-                n += 1;
-            }
-            // выделяем память для заголовка res_list
-            head_result = malloc(sizeof(output_data));
-            // меняем местами указатели на текущие
-            current = head;
-            if (current->operation == 'v')
-            {
-                head_result->result = vectors(current->sign, current->size, current->firstNum, current->secondNum);
-            }
-            else
-            { head_result->result = numbers(current->sign, current->firstNum, current->secondNum); }
-            head_result->res_next = NULL;
-            current = current->next;
-            current_result = head_result;
-            // добавляем все элементы в res_list
-            while (current != NULL)
-            {
-                addelement_res(current_result, current);
-                current = current->next;
-                current_result = current_result->res_next;
-            }
-            current = head;
-            current_result = head_result;
-            fclose(input);
-            output = fopen(outFile, "w");
-            // обрабатываем все элементы в res_list о тех пор, пока они не закончатся
-            // добавление результатов в выводной файл
-            while (current != NULL) {
-                if (current->operation == 'v') {
-                    fprintf(output, "(");
-                    //вывод данных из first,second and result
-                    for (int i = 0; i < current->size; i++) {
-                        fprintf(output, " %.2f ", current->firstNum[i]);
-                    }
-                    fprintf(output, ") %c (", current->sign);
-                    for (int i = 0; i < current->size; i++) {
-                        fprintf(output, " %.2f ", current->secondNum[i]);
-                    }
-                    fprintf(output, ") = ");
-                    if (current->sign != '*') {
-                        fprintf(output, "(");
-                        for (int i = 0; i < current->size; i++) { fprintf(output, " %.2f ", current_result->result[i]); }
-                        fprintf(output, ")\n");
-                    } else {
-                        fprintf(output, " %.2f\n", current_result->result[0]);
-                    }
-                } else if (current->operation == 's'){
-                    fprintf(output, "%.2f\n", current_result->result[0]);
-               }
-                current = current->next;
-                current_result = current_result->res_next;
-            }
-            fclose(output);
-            }
-        printf("\nХотите ли вы продолжить?\n");
-        printf("Введите 0, чтобы завершить, или введите любой символ, чтобы продолжить: ");
-        scanf(" %i", &end_work);
-        }
-    return EXIT_SUCCESS;
+
+			while (feof(input) == 0) { // добавление элементов списка, пока не закончится файл
+				add_el(current, input);
+				current = current->next;
+
+			}
+			head_res = malloc(sizeof(struct list2)); // память для первого элемента списка для вывода
+			current = head;
+			if (current->choose == 'v') {
+				head_res->res = vect(current->sign, current->size, current->x,
+						current->y);
+			} else {
+				head_res->res = numb(current->sign, current->x, current->y);
+			}
+			head_res->res_next = NULL;
+			current = current->next;
+			current_res = head_res;
+			while (current != NULL) { // пока элемент списка не последниий
+				res_add_el(current_res, current);
+				// переустановка указателей на следующий элемент
+				current = current->next;
+				current_res = current_res->res_next;
+			}
+			current = head;
+			current_res = head_res;
+			fclose(input);
+			output = fopen(out, "w");
+			while (current != NULL) //запись ответа в output
+			{
+				if (current->choose == 'v') {
+					fprintf(output, "(");
+					for (int i = 0; i < current->size; i++) {
+						fprintf(output, " %.2f", current->x[i]);
+					}
+					fprintf(output, ") %c (", current->sign);
+					for (int i = 0; i < current->size; i++) {
+						fprintf(output, " %.2f", current->y[i]);
+					}
+					fprintf(output, " ) = ");
+					if (current->sign != '*') {
+						fprintf(output, "( ");
+						for (int i = 0; i < current->size; i++) {
+							fprintf(output, "%.2f ", current_res->res[i]);
+						}
+						fprintf(output, ")\n");
+					} else {
+						fprintf(output, "%.2f\n", current_res->res[0]);
+					}
+				} else if (current->choose == 's') {
+					fprintf(output, " %.2f %c %.2f = %.2f\n", current->x[0],
+							current->y[0], current->sign, current_res->res[0]);
+				}
+				current = current->next;
+				current_res = current_res->res_next;
+			}
+			fclose(output);
+		}
+		printf("do you want to continue? (y/n)");
+		scanf("%s", &n);
+	}
+	return 0;
 }
-// функция для подсчета простых выражений с выделением памяти
-float *numbers(char sign, float *firstNum, float *secondNum){
-    float *res_num;
-    float var1, var2;
-    res_num = malloc(1 * sizeof(float));
-    switch (sign) {
-        case '+': // набираем + для сложения
-            res_num[0] = firstNum[0] + secondNum[0];
-            return res_num;
-        case '-': // набираем - для вычитания
-            res_num[0] = firstNum[0] - secondNum[0];
-            return res_num;
-        case '*': // набираем * для умножения
-            res_num[0] = firstNum[0] * secondNum[0];
-            return res_num;
-        case '/':
-            if (secondNum[0] != 0) {
-                res_num[0] = firstNum[0] / secondNum[0];
-                return res_num;
-            }
-            else {
-                return 0;
-            }
-        case '^':
-            var2 = 1;
-            var1 = 1;
-            for (int ist1=1;ist1<=secondNum[0];ist1++){
-                var1 = var2;
-                var2 = var1 * firstNum[0];}
-            res_num[0] = var2;
-            return res_num;
-        case '!':
-            var1 = 1;
-            for(int i = 1; i<=firstNum[0]; i++)
-            {var1 = var1 * i;}
-            res_num[0] = var1;
-            return res_num;
-    }
-    return firstNum;
-    return secondNum;
-    free(firstNum);  // вернуть необходимые результаты после подсчёта, освободить vars.
-    free(secondNum);
-    free(res_num);
+
+// функция для операций с числами
+float* numb(char sign, float *x, float *y) {
+	float f, S, *res_numb;
+	res_numb = malloc(sizeof(float));
+	switch (sign) {
+	case '+':
+		res_numb[0] = x[0] + y[0];
+		return res_numb;
+	case '-':
+		res_numb[0] = x[0] - y[0];
+		return res_numb;
+	case '*':
+		res_numb[0] = x[0] * y[0];
+		return res_numb;
+	case '/':
+		if (y != 0) {
+			res_numb[0] = x[0] / y[0];
+			return res_numb;
+		} else {
+			return 0;
+		}
+	case '!':
+		f = 1;
+		for (int i = 1; i <= x[0]; i++) {
+			f *= i;
+		}
+		res_numb[0] = f;
+		return res_numb;
+	case '^':
+		f = 1;
+		S = 1;
+		for (int i = 1; i <= y[0]; i++) {
+			S *= x[0];
+		}
+		res_numb[0] = S;
+		return res_numb;
+	}
+	return x;
+	return y;
+	free(x);
+	free(y);
+	free(res_numb);
 }
-// функция подсчёта векторов с выделением памяти
-float *vectors(char sign, int size, float *vector1, float *vector2){
-    float *res_vect;
-    switch (sign){
-        case '+':
-            res_vect = malloc(size * sizeof(float));
-            for (int i = 0; i < size; i++)
-            {
-                res_vect[i] = vector1[i] + vector2[i];
-            }
-            return res_vect;
-        case '-':
-            res_vect = malloc(size * sizeof(float));
-            for (int i = 0; i < size; i++)
-            {
-                res_vect[i] = vector1[i] - vector2[i];
-            }
-            return res_vect;
-        case '*':
-            res_vect = malloc(1 * sizeof(float));
-            res_vect[0] = 0;
-            for (int i = 0; i < size; i++)
-            {
-                res_vect[0] = res_vect[0] + (vector1[i] * vector2[i]);
-            }
-            return res_vect;
-        }
-    return vector1;
-    return vector2;
-    free(vector1);  // вернуть необходимые результаты после подсчёта и освободить vars
-    free(vector2);
-    free(res_vect);
+
+// функция для операций с векторами
+float* vect(char sign, int size, float *a, float *b) {
+	float *res_vect;
+	switch (sign) {
+	case '+':
+		res_vect = malloc(size * sizeof(float));
+		for (int i = 0; i < size; i++) {
+			res_vect[i] = a[i] + b[i];
+		}
+		return res_vect;
+	case '-':
+		res_vect = malloc(size * sizeof(float));
+		for (int i = 0; i < size; i++) {
+			res_vect[i] = a[i] - b[i];
+		}
+		return res_vect;
+	case '*':
+		res_vect = malloc(sizeof(float));
+		res_vect[0] = 0;
+		for (int i = 0; i < size; i++) {
+			res_vect[0] += a[i] * b[i];
+		}
+		return res_vect;
+	}
+	return a;
+	return b;
+	free(a);
+	free(b);
+	free(res_vect);
 }
-//Предназначена для чтения указателя-числа и добавления его в переменную
-float *addnumber(FILE *input, int size){
-    float *number;
-    number = malloc(size * sizeof(float));
-    for(int i = 0;i < size;i++)
-    {
-        fscanf(input,"%f", &number[i]);
-    }
-    return number;
+
+// считывание указателей, добавление чисел
+float* add_numb(FILE *input, int size) {
+	float *numb;
+	numb = malloc(size * sizeof(float));
+	for (int i = 0; i < size; i++) {
+		fscanf(input, "%f", &numb[i]);
+	}
+	return numb;
 }
-// Функция добавления необходимых номеров в нашу созданную структуру
-// Читает инструкции из входного файла и создаёт список с преопределенными действиями
-void addelement(input_data *current, FILE *input){
-    input_data *tmp = malloc(1 * sizeof(input_data));
-    fscanf(input, " %c %c", &tmp->sign, &tmp->operation);
-    if (tmp->operation == 'v'){
-        fscanf(input, " %i", &tmp->size);}
-    else{
-        tmp->size = 1;
-    }
-    if (tmp->sign != '!')
-    {
-    	tmp->firstNum = addnumber(input, tmp->size);
-        tmp->secondNum = addnumber(input, tmp->size);
-    }
-    else
-    {
-        tmp->firstNum = addnumber(input, tmp->size);
-        tmp->secondNum = NULL;
-    }
-    tmp->next = NULL;
-    current->next = tmp;
+
+// добавление элемента списка для входных данных
+void add_el(struct list1 *current, FILE *input) {
+	struct list1 *z = malloc(sizeof(struct list1));
+	fscanf(input, " %c", &z->sign);
+	fscanf(input, " %c", &z->choose);
+	if (z->choose == 'v') {
+		fscanf(input, " %i", &z->size);
+	} else {
+		z->size = 1;
+	}
+	if (z->sign != '!') {
+		z->x = add_numb(input, z->size);
+		z->y = add_numb(input, z->size);
+	} else {
+		z->x = add_numb(input, z->size);
+		z->y = NULL;
+	}
+	z->next = NULL; // последний элемент списка
+	current->next = z; // переустановка указателя
 }
-// я уже эти функции описывал выше. не вижу смысла нагромождать описанием код. в самом начале всё написано.
-void addelement_res(output_data *current_res, input_data *current)
-{
-    output_data *tmp_res = malloc(1 * sizeof(output_data));
-    if (current->operation == 'v'){
-        tmp_res->result = vectors(current->sign, current->size, current->firstNum, current->secondNum);
-    }
-    else{
-        tmp_res->result = numbers(current->sign, current->firstNum, current->secondNum);
-    }
-    tmp_res-> res_next = NULL;
-    current_res-> res_next = tmp_res;
+
+// добавление элемента списка для выходных данных
+void res_add_el(struct list2 *res_current, struct list1 *current) {
+	struct list2 *z_res = malloc(sizeof(struct list1));
+	if (current->choose == 'v') {
+		z_res->res = vect(current->sign, current->size, current->x, current->y);
+	} else {
+		z_res->res = numb(current->sign, current->x, current->y);
+	}
+	z_res->res_next = NULL;
+	res_current->res_next = z_res;
 }

@@ -99,6 +99,10 @@ char* read_string(FILE *input) {
 	char *s = (char*) malloc(len * sizeof(char));
 	for (char c = fgetc(input); !feof(input) && c != '\n'; c = fgetc(input)) {
 		s[size++] = c;
+		if (size >= len) { // если ёмкости недостаточно, то она увеличится в два раза
+					len *= 2;
+					s = (char*) realloc(s, len * sizeof(char)); // перераспределим нашу память
+				}
 	}
 	s[size] = '\0';
 	return s;

@@ -10,7 +10,7 @@ queue_t init_queue() {
 	queue.tail = NULL;
 	return queue;
 }
-// добавл€ю элемента в конец очереди
+// добавл€ю элемента в конец нашей очереди
 void enqueue(queue_t *queue, char *value) {
 	data *node = (data*) malloc(sizeof(data));
 	node->elem = value;

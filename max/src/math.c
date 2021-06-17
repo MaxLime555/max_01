@@ -3,8 +3,8 @@
 #include "queue.h"
 #include <stdlib.h>
 #include <stdio.h>
-
-// результат числового выражения для стека
+// РћРїРёСЃР°РЅРёРµ СЃР°РјРѕРіРѕ РєР°Р»СЊРєСѓР»СЏС‚РѕСЂР°:
+// СЂРµР·СѓР»СЊС‚Р°С‚ С‡РёСЃР»РѕРІРѕРіРѕ РІС‹СЂР°Р¶РµРЅРёСЏ РґР»СЏ СЃС‚РµРєР°
 float numb_s(char sign, float x, float y) {
 	float res, f, S;
 	switch (sign) {
@@ -46,7 +46,7 @@ float numb_s(char sign, float x, float y) {
 }
 
 
-//результат числового выражения для списков
+//СЂРµР·СѓР»СЊС‚Р°С‚ С‡РёСЃР»РѕРІРѕРіРѕ РІС‹СЂР°Р¶РµРЅРёСЏ РґР»СЏ СЃРїРёСЃРєРѕРІ
 float* numb_l(char sign, float *x, float *y) {
 	float f, S, *res_numb;
 	res_numb = malloc(sizeof(float));
@@ -91,7 +91,7 @@ float* numb_l(char sign, float *x, float *y) {
 }
 
 
-// результат векторного выражения для списков
+// СЂРµР·СѓР»СЊС‚Р°С‚ РІРµРєС‚РѕСЂРЅРѕРіРѕ РІС‹СЂР°Р¶РµРЅРёСЏ РґР»СЏ СЃРїРёСЃРєРѕРІ
 float* vect_l(char sign, int size, float *a, float *b) {
 	float *res_vect;
 	switch (sign) {
@@ -133,7 +133,7 @@ double factorial(int f) {
 	return fact;
 }
 
-// результат числового выражения для очереди
+// СЂРµР·СѓР»СЊС‚Р°С‚ С‡РёСЃР»РѕРІРѕРіРѕ РІС‹СЂР°Р¶РµРЅРёСЏ РґР»СЏ РѕС‡РµСЂРµРґРё
 void numbers_q(FILE *output, char *s, char sign) {
 	int index = 3;
 
@@ -172,15 +172,15 @@ void numbers_q(FILE *output, char *s, char sign) {
 }
 
 
-// результат векторного выражения для очереди
+// СЂРµР·СѓР»СЊС‚Р°С‚ РІРµРєС‚РѕСЂРЅРѕРіРѕ РІС‹СЂР°Р¶РµРЅРёСЏ РґР»СЏ РѕС‡РµСЂРµРґРё
 void vectors_q(FILE *output, char *s, char sign) {
 	int index = 3;
-	int n = read_int(s, &index); // размерность вектора
+	int n = read_int(s, &index); // СЂР°Р·РјРµСЂРЅРѕСЃС‚СЊ РІРµРєС‚РѕСЂР°
 
 	double *v1 = (double*) malloc(n * sizeof(double));
 	double *v2 = (double*) malloc(n * sizeof(double));
 
-	// считываем вектора
+	// СЃС‡РёС‚С‹РІР°РµРј РІРµРєС‚РѕСЂР°
 	for (int i = 0; i < n; i++)
 		v1[i] = read_double(s, &index);
 
@@ -213,7 +213,7 @@ void vectors_q(FILE *output, char *s, char sign) {
 	free(v2);
 }
 
-// вычисление значения выражения для очереди
+// РІС‹С‡РёСЃР»РµРЅРёРµ Р·РЅР°С‡РµРЅРёСЏ РІС‹СЂР°Р¶РµРЅРёСЏ РґР»СЏ РѕС‡РµСЂРµРґРё
 void calc_q(FILE *input, char *s) {
 	char sign = s[0];
 	char op = s[2];
@@ -224,6 +224,4 @@ void calc_q(FILE *input, char *s) {
 		vectors_q(input, s, sign);
 	}
 }
-
-
 

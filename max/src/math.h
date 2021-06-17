@@ -15,7 +15,7 @@ void numbers_q(FILE *output, char *s, char sign);
 void vectors_q(FILE *output, char *s, char sign);
 
 void calc_q(FILE *input, char *s);
-
+//комменты вроде бы работают
 
 #endif /* MATH_H_ */
 

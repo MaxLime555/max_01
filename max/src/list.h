@@ -3,8 +3,7 @@
 #ifndef LIST_H_
 #define LIST_H_
 
-// выносим объявления структур и функции
-// список для входных данных
+// СЃРїРёСЃРѕРє РґР»СЏ РІС…РѕРґРЅС‹С… РґР°РЅРЅС‹С…
 struct list1 {
 	char sign, choose;
 	int size;
@@ -12,27 +11,17 @@ struct list1 {
 	struct list1 *next;
 };
 
-
-
-// список для выходных данных
+// СЃРїРёСЃРѕРє РґР»СЏ РІС‹С…РѕРґРЅС‹С… РґР°РЅРЅС‹С…
 struct list2 {
 	float *res;
 	struct list2 *res_next;
 };
 
-
-
-struct list1 *head, *current; //указатели на начало списка и текущий элемент
-
+struct list1 *head, *current; //СѓРєР°Р·Р°С‚РµР»Рё РЅР° РЅР°С‡Р°Р»Рѕ СЃРїРёСЃРєР° Рё С‚РµРєСѓС‰РёР№ СЌР»РµРјРµРЅС‚
 struct list2 *head_res, *current_res;
-
 float* numb_list(char sign, float *x, float *y);
-
 float* add_numb(FILE *input, int size);
-
 void add_el(struct list1 *current, FILE *input);
-
 void res_add_el(struct list2 *res_current, struct list1 *current);
 
 #endif /* LIST_H_ */
-

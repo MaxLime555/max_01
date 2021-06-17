@@ -7,7 +7,7 @@ typedef struct data {
 	struct data *next;
 } data;
 
-// структура для очереди
+// СЃС‚СЂСѓРєС‚СѓСЂР° РґР»СЏ РѕС‡РµСЂРµРґРё
 typedef struct queue_t {
 	data *head;
 	data *tail;

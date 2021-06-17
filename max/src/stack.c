@@ -2,7 +2,7 @@
 #include <stdlib.h>
 #include "stack.h"
 
-//íó ïîâòîðÿòüñÿ íå âèæó ñìûñëà :)
+// Ð£Ð¶Ðµ ÑƒÑÑ‚Ð°Ð» Ð¿Ð¸ÑÐ°Ñ‚ÑŒ ÐºÐ¾Ð¼Ð¼ÐµÐ½Ñ‚Ð°Ñ€Ð¸Ð¸, ÐµÑÐ»Ð¸ Ñ‡ÐµÑÑ‚Ð½Ð¾)
 
 void push_element(stack **head, float data) {
 	stack *z = malloc(sizeof(stack));
@@ -10,8 +10,6 @@ void push_element(stack **head, float data) {
 	z->data = data;
 	*head = z;
 }
-
-
 
 float pop_element(stack **head) {
 	stack *z;

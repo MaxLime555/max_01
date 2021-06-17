@@ -2,15 +2,16 @@
 #include <stdlib.h>
 #include <stdio.h>
 
-//×òîæ, ïðèñòóïèì ê î÷åðåäè, ñàìîìó ïðîáëåìíîìó, íà ìîé âçãëÿä, çàäàíèþ
-//ðàññêàçûâàþ:
+//ÐÐµÐ¼Ð½Ð¾Ð³Ð¾ Ñ€Ð°ÑÑÐºÐ°Ð¶Ñƒ Ð¿Ñ€Ð¾ Ð¾Ñ‡ÐµÑ€ÐµÐ´ÑŒ, Ð¿Ð¾Ñ‚Ð¾Ð¼Ñƒ Ñ‡Ñ‚Ð¾ Ð¿Ð¾Ð»Ð½Ñ‹Ðµ ÐºÐ¾Ð¼Ð¼ÐµÐ½Ñ‚Ð°Ñ€Ð¸Ð¸ Ð¼Ð¾Ð¶Ð½Ð¾ Ð½Ð°Ð¹Ñ‚Ð¸ Ð½Ð° Ð¼Ð¾ÐµÐ¼ Ð³Ð¸Ñ‚Ñ…Ð°Ð±Ðµ:)
+
 queue_t init_queue() {
-	queue_t queue; // ñîçäà¸ì î÷åðåäü
+	queue_t queue; // ÑÐ¾Ð·Ð´Ð°Ñ‘Ð¼ Ð¾Ñ‡ÐµÑ€ÐµÐ´ÑŒ
 	queue.head = NULL;
 	queue.tail = NULL;
 	return queue;
 }
-// äîáàâëÿþ ýëåìåíòà â êîíåö íàøåé î÷åðåäè
+
+// Ð´Ð¾Ð±Ð°Ð²Ð»ÐµÐ½Ð¸Ðµ ÑÐ»ÐµÐ¼ÐµÐ½Ñ‚Ð° Ð² ÐºÐ¾Ð½ÐµÑ† Ð¾Ñ‡ÐµÑ€ÐµÐ´Ð¸
 void enqueue(queue_t *queue, char *value) {
 	data *node = (data*) malloc(sizeof(data));
 	node->elem = value;
@@ -24,7 +25,7 @@ void enqueue(queue_t *queue, char *value) {
 	queue->tail = node;
 }
 
-// óäàëÿþ ýëåìåíò èç î÷åðåäè
+// ÑƒÐ´Ð°Ð»ÐµÐ½Ð¸Ðµ ÑÐ»ÐµÐ¼ÐµÐ½Ñ‚Ð° Ð¸Ð· Ð¾Ñ‡ÐµÑ€ÐµÐ´Ð¸
 char* dequeue(queue_t *queue) {
 	char *elem = queue->head->elem;
 
@@ -38,15 +39,15 @@ char* dequeue(queue_t *queue) {
 	return elem;
 }
 
-// ïðîâåðÿþ î÷åðåäü íà ïóñòîòó
+// Ð¿Ñ€Ð¾Ð²ÐµÑ€ÐºÐ° Ð¾Ñ‡ÐµÑ€ÐµÐ´Ð¸ Ð½Ð° Ð¿ÑƒÑÑ‚Ð¾Ñ‚Ñƒ
 int is_empty(queue_t queue) {
 	return queue.head == NULL;
 }
 
-// ñ÷èòûâàåì ñòðîêó èç ôàéëà
+// ÑÑ‡Ð¸Ñ‚Ñ‹Ð²Ð°Ð½Ð¸Ðµ ÑÑ‚Ñ€Ð¾ÐºÐ¸ Ð¸Ð· Ñ„Ð°Ð¹Ð»Ð°
 char* read_string(FILE *input) {
-	int size = 0; // ðàçìåð íàøåé ñòðîêè
-	int len = 1; // ¸ìêîñòü íàøåé ñòðîêè
+	int size = 0; // Ñ€Ð°Ð·Ð¼ÐµÑ€ ÑÑ‚Ñ€Ð¾ÐºÐ¸
+	int len = 1; // Ñ‘Ð¼ÐºÐ¾ÑÑ‚ÑŒ ÑÑ‚Ñ€Ð¾ÐºÐ¸
 	char *s = (char*) malloc(len * sizeof(char));
 	for (char c = fgetc(input); !feof(input) && c != '\n'; c = fgetc(input)) {
 		s[size++] = c;
@@ -58,12 +59,12 @@ char* read_string(FILE *input) {
 	return s;
 }
 
-// ïðîâåðÿþ íà öèôðó
+// Ð¿Ñ€Ð¾Ð²ÐµÑ€ÐºÐ° Ð½Ð° Ñ†Ð¸Ñ„Ñ€Ñƒ
 int is_digit(float c) {
 	return (c >= '0' && c <= '9');
 }
 
-// ââîæó ÷èñëî èç ñòðîêè
+// Ð²Ð²Ð¾Ð´ Ñ‡Ð¸ÑÐ»Ð° Ð¸Ð· ÑÑ‚Ñ€Ð¾ÐºÐ¸
 int read_int(char *s, int *i) {
 	int value = 0;
 
@@ -87,12 +88,8 @@ double read_double(char *s, int *i) {
 
 	char prev = s[*i];
 	s[*i] = '\0';
-	double value = atof(s + start); // ïåðåâîæó ñòðîêó â ÷èñëî
+	double value = atof(s + start); // Ð¿ÐµÑ€ÐµÐ²Ð¾Ð´Ð¸Ð¼ ÑÑ‚Ñ€Ð¾ÐºÑƒ Ð² Ñ‡Ð¸ÑÐ»Ð¾
 	s[*i] = prev;
 
 	return value;
 }
-
-//Íó è òóò ÿ óêàæó, ÷òî ýòî ðàáîòà Êëèìåíêî Ìàêñèìà)))
-
-
